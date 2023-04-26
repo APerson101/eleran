@@ -1,0 +1,63 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eleran/models/quiz_model.dart';
+import 'package:eleran/providers/countdownprovider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'take_quiz_view.dart';
+
+class QuizWaitingPageView extends ConsumerWidget {
+  const QuizWaitingPageView({super.key, required this.quizID});
+  final String quizID;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(_getQuizInfo(quizID)).when(data: (quiz) {
+      var status = ref.watch(startquizProvider);
+      var timeLeft = ref
+          .watch(CountDownNumberProvider(DateTime(
+              quiz.startDate.year,
+              quiz.startDate.month,
+              quiz.startDate.day,
+              quiz.startTime.hour,
+              quiz.startTime.minute)))
+          .when(data: (data) => data, error: (er, st) => -1, loading: () => -1);
+      return status == StartQuizEnum.countdown
+          ? Scaffold(
+              body: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Time left is:$timeLeft"),
+                  ],
+                ),
+              ),
+            )
+          : TakeQuizView(quiz: quiz);
+    }, error: (Object error, StackTrace stackTrace) {
+      print(stackTrace);
+      return const Center(
+        child: Text("failed to load"),
+      );
+    }, loading: () {
+      return const Center(child: CircularProgressIndicator.adaptive());
+    });
+  }
+}
+
+final _getQuizInfo =
+    FutureProvider.family<QuizModel, String>((ref, quizid) async {
+  // Quiz Info
+  debugPrint('getting quiz for id:$quizid');
+  var store = FirebaseFirestore.instance;
+  var quizData = (await store
+          .collection('Quizzes')
+          .where('quizID', isEqualTo: quizid)
+          .limit(1)
+          .get())
+      .docs[0];
+  print(quizData.data());
+  var quiz = QuizModel.fromMap(quizData.data());
+  print(quiz.toString());
+  return quiz;
+});

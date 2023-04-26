@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "772956890608",
+    "project_id": "edms-77162",
+    "storage_bucket": "edms-77162.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772956890608:android:813f0eb23e3703ef4ce935",
+        "android_client_info": {
+          "package_name": "com.example.eleran"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "772956890608-78b669mu01la374h4llhlrn6jgho37ea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT_BquQPUyxiFIc6-PUrVMnY9z3_TXm9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "772956890608-78b669mu01la374h4llhlrn6jgho37ea.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "772956890608-1sjk49j1r6idqgok2gj0elasben09u3a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.etransport"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772956890608:android:07eb173968ccdfea4ce935",
+        "android_client_info": {
+          "package_name": "com.example.etransport"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "772956890608-78b669mu01la374h4llhlrn6jgho37ea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT_BquQPUyxiFIc6-PUrVMnY9z3_TXm9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "772956890608-78b669mu01la374h4llhlrn6jgho37ea.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "772956890608-1sjk49j1r6idqgok2gj0elasben09u3a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.etransport"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
