@@ -1,12 +1,12 @@
 import 'package:eleran/helpers/db.dart';
-import 'package:eleran/mainapp/quiz_questions.dart';
+import 'package:eleran/mainapp/lecturer/quiz_questions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
-import '../helpers/enums.dart';
+import '../../helpers/enums.dart';
 
 class CreateQuizView extends ConsumerWidget {
   const CreateQuizView({super.key});
@@ -14,27 +14,30 @@ class CreateQuizView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(sendFakeData).when(
         data: (_) => Scaffold(
-              body: Form(
-                child: Column(children: [
-                  const _DifficultyWidget(),
-                  const _SelectCourseWidget(),
-                  const _DateWidget(),
-                  const _TimeWidget(),
-                  const _DurationWidget(),
-                  ElevatedButton(
-                      onPressed: () {
-                        // do some validation
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => QuizQuestionsCreatorView(
-                                  quizDuration: ref.watch(_selectedDuration)!,
-                                  difficulty: ref.watch(_selectedDifficulty),
-                                  startDate: ref.watch(_selectedDate)!,
-                                  startTime: ref.watch(_selectedTime)!,
-                                  courses: ref.watch(_selectedCourses),
-                                )));
-                      },
-                      child: const Text("NEXT"))
-                ]),
+              appBar: AppBar(),
+              body: SafeArea(
+                child: Form(
+                  child: Column(children: [
+                    const _DifficultyWidget(),
+                    const _SelectCourseWidget(),
+                    const _DateWidget(),
+                    const _TimeWidget(),
+                    const _DurationWidget(),
+                    ElevatedButton(
+                        onPressed: () {
+                          // do some validation
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => QuizQuestionsCreatorView(
+                                    quizDuration: ref.watch(_selectedDuration)!,
+                                    difficulty: ref.watch(_selectedDifficulty),
+                                    startDate: ref.watch(_selectedDate)!,
+                                    startTime: ref.watch(_selectedTime)!,
+                                    courses: ref.watch(_selectedCourses),
+                                  )));
+                        },
+                        child: const Text("NEXT"))
+                  ]),
+                ),
               ),
             ),
         loading: () => const Scaffold(
@@ -160,5 +163,6 @@ final _selectedCourses =
     StateProvider.autoDispose<List<CoursesListEnum>>((ref) => []);
 
 final sendFakeData = FutureProvider((ref) async {
+  return;
   await GetIt.I<Database>().createFakeData();
 });

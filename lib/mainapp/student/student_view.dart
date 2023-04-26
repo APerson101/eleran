@@ -83,7 +83,10 @@ class _PendingQuiz extends ConsumerWidget {
       return GestureDetector(
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return _QuizzesView(quizzes: quizzes);
+            return _QuizzesView(
+              quizzes: quizzes,
+              user: user,
+            );
           }));
         },
         child: DecoratedBox(
@@ -106,8 +109,9 @@ class _PendingQuiz extends ConsumerWidget {
 }
 
 class _QuizzesView extends ConsumerWidget {
-  const _QuizzesView({required this.quizzes});
+  const _QuizzesView({required this.quizzes, required this.user});
   final List<QuizModel> quizzes;
+  final UserModel user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -119,7 +123,10 @@ class _QuizzesView extends ConsumerWidget {
                     onTap: () {
                       Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
-                        return QuizWaitingPageView(quizID: e.quizID);
+                        return QuizWaitingPageView(
+                          quizID: e.quizID,
+                          user: user,
+                        );
                       }));
                     },
                     title: Text(e.creatorName),

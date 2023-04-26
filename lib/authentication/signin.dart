@@ -7,17 +7,40 @@ class SignInWidget extends ConsumerWidget {
   const SignInWidget({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        const Center(child: TextField()),
-        const Center(child: TextField()),
-        ElevatedButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => MainFakeApp()));
-            },
-            child: const Text("Login"))
-      ],
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Center(
+                  child: TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30))),
+              )),
+              const SizedBox(
+                height: 30,
+              ),
+              Center(
+                  child: TextField(
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30))))),
+              const SizedBox(
+                height: 30,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const MainFakeApp()));
+                  },
+                  child: const Text("Login"))
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

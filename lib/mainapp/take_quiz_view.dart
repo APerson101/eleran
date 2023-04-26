@@ -3,11 +3,13 @@ import 'package:eleran/providers/countdownprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/user_model.dart';
 import '../providers/savequizprovider.dart';
 
 class TakeQuizView extends ConsumerWidget {
-  const TakeQuizView({super.key, required this.quiz});
+  const TakeQuizView({super.key, required this.quiz, required this.user});
   final QuizModel quiz;
+  final UserModel user;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(saveQuizProvider, (previous, next) {
@@ -96,7 +98,9 @@ class TakeQuizView extends ConsumerWidget {
                                   '4421',
                                   answers,
                                   quiz.quizName,
-                                  DateTime.now());
+                                  DateTime.now(),
+                                  user.name,
+                                  user.id);
                             }
                           },
                           child: Text(current != quiz.allQuestions.length - 1

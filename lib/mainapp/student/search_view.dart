@@ -63,6 +63,7 @@ class StudentSearchView extends ConsumerWidget {
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       QuizWaitingPageView(
+                                                          user: user,
                                                           quizID:
                                                               result[currentRow]
                                                                   .quizID)));

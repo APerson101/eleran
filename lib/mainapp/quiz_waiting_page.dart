@@ -4,10 +4,13 @@ import 'package:eleran/providers/countdownprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/user_model.dart';
 import 'take_quiz_view.dart';
 
 class QuizWaitingPageView extends ConsumerWidget {
-  const QuizWaitingPageView({super.key, required this.quizID});
+  const QuizWaitingPageView(
+      {super.key, required this.quizID, required this.user});
+  final UserModel user;
   final String quizID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +36,7 @@ class QuizWaitingPageView extends ConsumerWidget {
                 ),
               ),
             )
-          : TakeQuizView(quiz: quiz);
+          : TakeQuizView(quiz: quiz, user: user);
     }, error: (Object error, StackTrace stackTrace) {
       print(stackTrace);
       return const Center(

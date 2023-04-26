@@ -4,35 +4,26 @@ import 'package:flutter/foundation.dart';
 
 class QuizHistoryModel {
   String quizName;
+  String userName;
+  String userID;
   List<bool> answers;
   String quizID;
   DateTime quizTaken;
-  QuizHistoryModel({
-    required this.quizName,
-    required this.answers,
-    required this.quizID,
-    required this.quizTaken,
-  });
-
-  QuizHistoryModel copyWith({
-    String? quizName,
-    List<bool>? answers,
-    String? quizID,
-    DateTime? quizTaken,
-  }) {
-    return QuizHistoryModel(
-      quizName: quizName ?? this.quizName,
-      answers: answers ?? this.answers,
-      quizID: quizID ?? this.quizID,
-      quizTaken: quizTaken ?? this.quizTaken,
-    );
-  }
+  QuizHistoryModel(
+      {required this.quizName,
+      required this.answers,
+      required this.quizID,
+      required this.quizTaken,
+      required this.userID,
+      required this.userName});
 
   Map<String, dynamic> toMap() {
     return {
       'quizName': quizName,
       'answers': answers,
       'quizID': quizID,
+      'userName': userName,
+      'userID': userID,
       'quizTaken': quizTaken.millisecondsSinceEpoch,
     };
   }
@@ -42,6 +33,8 @@ class QuizHistoryModel {
       quizName: map['quizName'] ?? '',
       answers: List<bool>.from(map['answers']),
       quizID: map['quizID'] ?? '',
+      userID: map['userID'],
+      userName: map['userName'],
       quizTaken: DateTime.fromMillisecondsSinceEpoch(map['quizTaken']),
     );
   }

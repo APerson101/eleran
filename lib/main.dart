@@ -4,17 +4,19 @@ import 'package:eleran/helpers/db.dart';
 import 'package:eleran/helpers/enums.dart';
 import 'package:eleran/models/question_model.dart';
 import 'package:eleran/models/quiz_model.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
+import 'authentication/signin.dart';
 import 'firebase_options.dart';
 import 'mainapp/quiz_waiting_page.dart';
-import 'mainapp/student/student_view.dart';
 import 'mainapp/take_quiz_view.dart';
 import 'models/user_model.dart';
 
@@ -30,12 +32,13 @@ void main() async {
   );
   GetIt.I.registerSingleton<FirebaseMessaging>(FirebaseMessaging.instance);
   GetIt.I.registerSingleton<FirebaseFunctions>(
-      FirebaseFunctions.instance..useFunctionsEmulator('192.168.8.101', 5001));
+      FirebaseFunctions.instance..useFunctionsEmulator('192.168.8.100', 5001));
   FirebaseFirestore store = FirebaseFirestore.instance;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   GetIt.I.registerSingleton<FirebaseFirestore>(store);
-  FirebaseFirestore.instance.useFirestoreEmulator('192.168.8.101', 8080);
-  FirebaseDatabase.instance.useDatabaseEmulator('192.168.8.101', 9000);
+  FirebaseFirestore.instance.useFirestoreEmulator('192.168.8.100', 8080);
+  FirebaseDatabase.instance.useDatabaseEmulator('192.168.8.100', 9000);
+  FirebaseAuth.instance.useAuthEmulator('192.168.8.100', 9099);
   GetIt.I.registerSingleton<Database>(Database());
 
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -104,6 +107,12 @@ class MyAppTest extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: TakeQuizView(
+      user: UserModel(
+        id: 'aisha',
+        name: "Aisha sibuway",
+        courses: CoursesListEnum.values,
+        userType: UserType.student,
+      ),
       quiz: QuizModel(
           quizName: 'hello world',
           creatorID: 'creatorID',
@@ -166,6 +175,12 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
               home: QuizWaitingPageView(
             quizID: event.data['quizId'],
+            user: UserModel(
+              id: 'aisha',
+              name: "Aisha sibuway",
+              courses: CoursesListEnum.values,
+              userType: UserType.student,
+            ),
           ));
         }));
       } else {
@@ -183,13 +198,73 @@ class MyApp extends StatelessWidget {
     });
 
     return MaterialApp(
-        home: StudentView(
-      user: UserModel(
-          courses: [CoursesListEnum.phy111, CoursesListEnum.comp103],
-          name: 'Aisha Bamanga Tukur',
-          id: '4421',
-          userType: UserType.student),
-    ));
+        initialRoute:
+            FirebaseAuth.instance.currentUser == null ? '/sign-in' : '/profile',
+        routes: {
+          '/sign-in': (context) {
+            return SignInScreen(
+              providers: [EmailAuthProvider()],
+              actions: [
+                AuthStateChangeAction<SignedIn>((context, state) {
+                  Navigator.pushReplacementNamed(context, '/profile');
+                }),
+              ],
+            );
+          },
+          '/profile': (context) {
+            var user = FirebaseAuth.instance.currentUser!;
+            return ProfileDecider(
+              id: user.uid,
+            );
+          },
+        },
+        home: const SignInWidget()
+        // home: StudentView(
+        //   user: UserModel(
+        //       courses: [CoursesListEnum.phy111, CoursesListEnum.comp103],
+        //       name: 'Aisha Bamanga Tukur',
+        //       id: '4421',
+        //       userType: UserType.student),
+        // ),
+        );
+  }
+}
+
+class ProfileDecider extends ConsumerWidget {
+  const ProfileDecider({super.key, required this.id});
+  final String id;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(_getUserProfile(id)).when(
+        data: (data) {
+          if (data == null) {
+            return Center(
+              child: Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(
+                        labelText: 'Enter name',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30))),
+                  )
+                ],
+              ),
+            );
+          }
+          {
+            return ProfileScreen(
+              providers: [EmailAuthProvider()],
+              actions: [
+                SignedOutAction((context) {
+                  Navigator.pushReplacementNamed(context, '/sign-in');
+                }),
+              ],
+            );
+          }
+        },
+        error: (er, st) => const Center(child: Text("Error")),
+        loading: () =>
+            const Center(child: CircularProgressIndicator.adaptive()));
   }
 }
 
@@ -244,9 +319,20 @@ void foregroundNotificationHander(
       }
       return QuizWaitingPageView(
         quizID: quizId,
+        user: UserModel(
+          id: 'aisha',
+          name: "Aisha sibuway",
+          courses: CoursesListEnum.values,
+          userType: UserType.student,
+        ),
       );
     }));
   }
 }
 
 BuildContext? contexter;
+
+final _getUserProfile =
+    FutureProvider.family<UserModel?, String>((ref, id) async {
+  return await GetIt.I<Database>().getUserProfile(id);
+});

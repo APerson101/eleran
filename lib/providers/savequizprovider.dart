@@ -16,11 +16,17 @@ class SaveQuiz extends _$SaveQuiz {
     return SaveQuizEnums.idle;
   }
 
-  saveAnswer(String quizID, String studentID, List<bool> answers,
-      String quizName, DateTime quizTaken) async {
+  saveAnswer(
+      String quizID,
+      String studentID,
+      List<bool> answers,
+      String quizName,
+      DateTime quizTaken,
+      String userName,
+      String userID) async {
     try {
-      await GetIt.I<Database>()
-          .saveQuizAnswer(quizID, studentID, answers, quizName, quizTaken);
+      await GetIt.I<Database>().saveQuizAnswer(
+          quizID, studentID, answers, quizName, quizTaken, userName, userID);
       state = const AsyncData(SaveQuizEnums.success);
       ref.watch(stopQuizProvider.notifier).state = QuizEndEnum.result;
     } catch (e) {

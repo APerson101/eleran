@@ -3,7 +3,7 @@ import 'package:eleran/models/quiz_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../models/question_model.dart';
+import '../../models/question_model.dart';
 import 'quiz_creation_update.dart';
 
 class QuizQuestionsCreatorView extends ConsumerWidget {

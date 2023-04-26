@@ -101,13 +101,21 @@ class Database {
     return status;
   }
 
-  saveQuizAnswer(String quizID, String studentID, List<bool> answers,
-      String quizName, DateTime quizTaken) async {
+  saveQuizAnswer(
+      String quizID,
+      String studentID,
+      List<bool> answers,
+      String quizName,
+      DateTime quizTaken,
+      String userName,
+      String userID) async {
     var ref = database.ref('quizzes/$quizID');
     await ref.set({studentID: answers});
     var quizHistory = QuizHistoryModel(
         quizName: quizName,
         answers: answers,
+        userID: userName,
+        userName: userID,
         quizID: quizID,
         quizTaken: quizTaken);
     (await store
@@ -176,5 +184,49 @@ class Database {
     return allQuizzes
         .where((element) => element.relatedCourses.contains(course))
         .toList();
+  }
+
+  Future<List<QuizModel>> getLecturerQuiz({required String id}) async {
+    var docs = (await store
+            .collection('Quizzes')
+            .where('creatorID', isEqualTo: id)
+            .get())
+        .docs;
+    return List.generate(
+        docs.length, (index) => QuizModel.fromMap(docs[index].data()));
+  }
+
+  Future<List<QuizHistoryModel>> getQuizStats(
+      {required String quizID, required staffID}) async {
+    List<String> staffQuizID = [];
+    var docs = (await store
+            .collection('Quizzes')
+            .where('creatorID', isEqualTo: staffID)
+            .get())
+        .docs;
+    for (var doc in docs) {
+      staffQuizID.add(doc.get('quizID'));
+    }
+
+    var hist = (await store
+            .collection('history')
+            .where('creatorID', whereIn: staffQuizID)
+            .get())
+        .docs;
+    return List.generate(
+        hist.length, (index) => QuizHistoryModel.fromMap(hist[index].data()));
+  }
+
+  Future<UserModel?>? getUserProfile(String id) async {
+    var doc = (await store
+            .collection('users')
+            .where('id', isEqualTo: id)
+            .limit(1)
+            .get())
+        .docs[0];
+    if (doc.exists) {
+      return UserModel.fromMap(doc.data());
+    }
+    return null;
   }
 }
