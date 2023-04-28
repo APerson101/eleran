@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../models/user_model.dart';
 import 'countdownprovider.dart';
 
 part 'savequizprovider.g.dart';
@@ -32,6 +33,26 @@ class SaveQuiz extends _$SaveQuiz {
     } catch (e) {
       debugPrint(e.toString());
       state = const AsyncData(SaveQuizEnums.failure);
+    }
+  }
+}
+
+enum SaveProfileEnum { success, failure, idle }
+
+@riverpod
+class SaveUserProfile extends _$SaveUserProfile {
+  @override
+  FutureOr<SaveProfileEnum> build() {
+    return (SaveProfileEnum.idle);
+  }
+
+  saveProfile(UserModel user) async {
+    state = const AsyncValue.loading();
+    try {
+      await GetIt.I<Database>().saveUserProfile(user: user);
+      state = const AsyncData(SaveProfileEnum.success);
+    } catch (e) {
+      state = AsyncError(e.toString(), StackTrace.current);
     }
   }
 }

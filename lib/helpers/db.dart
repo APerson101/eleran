@@ -1,14 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:eleran/helpers/enums.dart';
-import 'package:eleran/models/question_model.dart';
 import 'package:eleran/models/quiz_history_model.dart';
 import 'package:eleran/models/quiz_model.dart';
 import 'package:eleran/models/user_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+
+import '../models/coursemodel.dart';
 
 class Database {
   FirebaseFirestore store = FirebaseFirestore.instance;
@@ -17,32 +16,32 @@ class Database {
   Database();
   Client client = Client();
   String tempToken = "";
-  saveToken(String fcmtoken) async {
-    // store.runTransaction((transaction) => transaction.)
-    debugPrint("Saving token: $fcmtoken");
-
-    tempToken = fcmtoken;
-    return;
-    return await store
-        .collection('users')
-        .doc('userID')
-        .set({'fcmtoken': fcmtoken})
+  saveToken(String fcmtoken, UserModel user) async {
+    var id = (await store
+            .collection('users')
+            .where('id', isEqualTo: user.id)
+            .limit(1)
+            .get())
+        .docs[0]
+        .id;
+    (await store
+        .doc('users/$id')
+        .update({'fcmtoken': fcmtoken})
         .then((value) => true)
         .catchError((err) {
           debugPrint(err.toString());
           return false;
-        });
+        }));
   }
 
-  notifyquizUpdate(List<CoursesListEnum> students) async {
+  notifyquizUpdate(List<String> students) async {
     // get students to be notified
     debugPrint("Notifying students about created quiz");
     var studentsToBeNotified = await store
         .collection('users')
         .where('type', isEqualTo: 'student')
         .where('courses',
-            arrayContainsAny:
-                students.map((course) => describeEnum(course)).toList())
+            arrayContainsAny: students.map((course) => course).toList())
         .get()
         .then((value) => value);
 
@@ -64,43 +63,6 @@ class Database {
     return result.data as bool;
   }
 
-  createFakeData() async {
-    debugPrint("creating fake user data");
-
-    await store.collection('users').add({
-      'type': 'student',
-      'courses': CoursesListEnum.values.map((e) => describeEnum(e)).toList(),
-      'name': 'abdul-hadi hashim',
-      'fcmtoken': tempToken
-    });
-  }
-
-  fakeQuizData() async {
-    debugPrint("creating fake quiz data");
-    var quizCollection = store.collection('Quizzes');
-    var quizzModel = QuizModel(
-        creatorID: 'creatorID',
-        quizName: 'Midterm 1',
-        quizID: 'quizID',
-        creatorName: 'Abba baba',
-        allQuestions: List.generate(
-            4,
-            (index) => QuestionModel(
-                question: 'question',
-                correctAnswers: [true, true, false, false],
-                options: ['optionsA', 'B', 'C', "D"])),
-        createdDate: DateTime.now(),
-        duration: 20,
-        startDate: DateTime(2023, 4, 5),
-        startTime: const TimeOfDay(hour: 14, minute: 00),
-        relatedCourses: CoursesListEnum.values);
-    var status = await quizCollection
-        .add(quizzModel.toMap())
-        .then((value) => 'SuccessFully Created New Quiz')
-        .catchError((onError) => 'Failed to Create Quiz');
-    return status;
-  }
-
   saveQuizAnswer(
       String quizID,
       String studentID,
@@ -109,7 +71,7 @@ class Database {
       DateTime quizTaken,
       String userName,
       String userID) async {
-    var ref = database.ref('quizzes/$quizID');
+    var ref = database.ref('Quizzes/$quizID');
     await ref.set({studentID: answers});
     var quizHistory = QuizHistoryModel(
         quizName: quizName,
@@ -169,8 +131,7 @@ class Database {
     return data;
   }
 
-  Future<List<QuizModel>> getAllPossibleQuiz(
-      {required CoursesListEnum course}) async {
+  Future<List<QuizModel>> getAllPossibleQuiz({required String course}) async {
     var docs = (await store.collection('Quizzes').get()).docs;
     var allQuizzes = List.generate(
         docs.length, (index) => QuizModel.fromMap(docs[index].data()));
@@ -223,10 +184,43 @@ class Database {
             .where('id', isEqualTo: id)
             .limit(1)
             .get())
-        .docs[0];
-    if (doc.exists) {
-      return UserModel.fromMap(doc.data());
+        .docs;
+    if (doc.isNotEmpty) {
+      return UserModel.fromMap(doc[0].data());
     }
     return null;
+  }
+
+  Future<List<CourseModel>> getAllCourses() async {
+    var data = (await store.collection('courses').get()).docs;
+
+    if (data.isNotEmpty) {
+      List<CourseModel> courses = [];
+      for (var course in data) {
+        courses.add(CourseModel.fromMap(course.data()));
+      }
+      return courses;
+    }
+    return [];
+  }
+
+  saveUserProfile({required UserModel user}) async {
+    (await store.collection('users').add(user.toMap()));
+  }
+
+  saveNewCourse(Map<String, dynamic> map) async {
+    (await store.collection('courses').add(map));
+  }
+
+  removeCourse(CourseModel course) async {
+    var docID = (await store
+            .collection('courses')
+            .where('name', isEqualTo: course.name)
+            .limit(1)
+            .get())
+        .docs[0]
+        .id;
+
+    (await store.doc('courses/$docID').delete());
   }
 }

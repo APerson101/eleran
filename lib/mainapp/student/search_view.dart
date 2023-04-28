@@ -1,11 +1,11 @@
-import 'package:eleran/helpers/enums.dart';
 import 'package:eleran/mainapp/quiz_waiting_page.dart';
+import 'package:eleran/models/coursemodel.dart';
 import 'package:eleran/providers/search_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../main.dart';
 import '../../models/quiz_model.dart';
 import '../../models/user_model.dart';
 
@@ -21,26 +21,33 @@ class StudentSearchView extends ConsumerWidget {
         child: SizedBox.expand(
           child: Column(
             children: [
-              //
-              Row(
-                children: CoursesListEnum.values.map((e) {
-                  return Expanded(
-                    child: RadioListTile(
-                        title: Text(describeEnum(e)),
-                        value: e,
-                        groupValue: ref.watch(_selectedValue),
-                        onChanged: (changed) {
-                          ref.watch(_selectedValue.notifier).state = changed!;
-                        }),
-                  );
-                }).toList(),
-              ),
-
+              ref.watch(getCoursesProvider).when(data: (courses) {
+                return Row(
+                  children: courses.map((e) {
+                    return Expanded(
+                      child: RadioListTile<CourseModel>(
+                          title: Text(e.name),
+                          value: e,
+                          groupValue: courses[ref.watch(_selectedValue)],
+                          onChanged: (changed) {
+                            ref.watch(_selectedValue.notifier).state =
+                                courses.indexOf(changed!);
+                            ref.watch(_selectedCourse.notifier).state = changed;
+                          }),
+                    );
+                  }).toList(),
+                );
+              }, error: (Object error, StackTrace stackTrace) {
+                return const Text("Error loading");
+              }, loading: () {
+                return const Center(
+                    child: CircularProgressIndicator.adaptive());
+              }),
               ElevatedButton(
                   onPressed: () async {
                     ref
                         .watch(searchResultProvider.notifier)
-                        .search(ref.watch(_selectedValue));
+                        .search(ref.watch(_selectedCourse)!.name);
                   },
                   child: const Text("search")),
               ref.watch(searchResultProvider).when(data: (result) {
@@ -105,7 +112,8 @@ class StudentSearchView extends ConsumerWidget {
   }
 }
 
-final _selectedValue = StateProvider((ref) => CoursesListEnum.comp103);
+final _selectedValue = StateProvider((ref) => 0);
+final _selectedCourse = StateProvider<CourseModel?>((ref) => null);
 
 class QuizSearchResult extends DataGridSource {
   QuizSearchResult({required List<QuizModel> models}) {

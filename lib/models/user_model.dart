@@ -1,31 +1,34 @@
 import 'dart:convert';
 
-import 'package:eleran/helpers/enums.dart';
 import 'package:flutter/foundation.dart';
 
 class UserModel {
   String name;
   String id;
-  List<CoursesListEnum>? courses;
+  List<String>? courses;
   UserType userType;
+  String? fcmToken;
   UserModel({
     required this.name,
     required this.id,
     this.courses,
     required this.userType,
+    this.fcmToken,
   });
 
   UserModel copyWith({
     String? name,
     String? id,
-    List<CoursesListEnum>? courses,
+    List<String>? courses,
     UserType? userType,
+    String? fcmToken,
   }) {
     return UserModel(
       name: name ?? this.name,
       id: id ?? this.id,
       courses: courses ?? this.courses,
       userType: userType ?? this.userType,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 
@@ -33,11 +36,9 @@ class UserModel {
     return {
       'name': name,
       'id': id,
-      'courses': courses != null
-          ? List.generate(
-              courses!.length, (index) => describeEnum(courses![index]))
-          : null,
+      'courses': courses,
       'userType': describeEnum(userType),
+      'fcmToken': fcmToken,
     };
   }
 
@@ -45,12 +46,10 @@ class UserModel {
     return UserModel(
       name: map['name'] ?? '',
       id: map['id'] ?? '',
-      courses: map['courses'] != null
-          ? List<CoursesListEnum>.from(map['courses']?.map((x) =>
-              CoursesListEnum.values.firstWhere((e) => describeEnum(e) == x)))
-          : null,
-      userType:
-          UserType.values.firstWhere((e) => describeEnum(e) == map['userType']),
+      courses: List<String>.from(map['courses']),
+      userType: UserType.values
+          .firstWhere((element) => describeEnum(element) == map['userType']),
+      fcmToken: map['fcmToken'],
     );
   }
 
@@ -61,7 +60,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(name: $name, id: $id, courses: $courses, userType: $userType)';
+    return 'UserModel(name: $name, id: $id, courses: $courses, userType: $userType, fcmToken: $fcmToken)';
   }
 
   @override
@@ -72,12 +71,17 @@ class UserModel {
         other.name == name &&
         other.id == id &&
         listEquals(other.courses, courses) &&
-        other.userType == userType;
+        other.userType == userType &&
+        other.fcmToken == fcmToken;
   }
 
   @override
   int get hashCode {
-    return name.hashCode ^ id.hashCode ^ courses.hashCode ^ userType.hashCode;
+    return name.hashCode ^
+        id.hashCode ^
+        courses.hashCode ^
+        userType.hashCode ^
+        fcmToken.hashCode;
   }
 }
 

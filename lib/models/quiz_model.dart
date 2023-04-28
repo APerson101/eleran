@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:eleran/helpers/enums.dart';
 import 'package:eleran/models/question_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ class QuizModel {
   List<QuestionModel> allQuestions;
   DateTime createdDate;
   int duration;
-  List<CoursesListEnum> relatedCourses;
+  List<String> relatedCourses;
   DateTime startDate;
   TimeOfDay startTime;
   QuizModel(
@@ -39,16 +38,13 @@ class QuizModel {
       'creatorName': creatorName,
       'startDate': startDate.millisecondsSinceEpoch,
       'startTime': {'hour': startTime.hour, 'min': startTime.minute},
-      'courses': relatedCourses.map((course) => describeEnum(course)).toList()
+      'courses': relatedCourses
     };
   }
 
   factory QuizModel.fromMap(Map<String, dynamic> map) {
-    var courses = map['courses'] as List;
-    var enumCourses = courses
-        .map((course) => CoursesListEnum.values
-            .firstWhere((element) => describeEnum(element) == course))
-        .toList();
+    var courses = map['courses'] as List<String>;
+
     return QuizModel(
         creatorID: map['creatorID'] ?? '',
         quizID: map['quizID'],
@@ -61,7 +57,7 @@ class QuizModel {
         startDate: DateTime.fromMillisecondsSinceEpoch(map['startDate']),
         startTime: TimeOfDay(
             hour: map['startTime']['hour'], minute: map['startTime']['min']),
-        relatedCourses: enumCourses);
+        relatedCourses: courses);
   }
 
   String toJson() => json.encode(toMap());

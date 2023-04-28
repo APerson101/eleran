@@ -1,12 +1,14 @@
-import 'package:eleran/helpers/db.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 
-class MainFakeApp extends ConsumerWidget {
-  const MainFakeApp({super.key});
+import '../models/user_model.dart';
+
+class MainApp extends ConsumerWidget {
+  const MainApp({super.key, required this.userModel});
+  final UserModel userModel;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,9 +53,7 @@ class MainFakeApp extends ConsumerWidget {
                   // get messaging permission
                   // set up fake data
                   // 1. quiz
-                  await GetIt.I<Database>().fakeQuizData();
-                  // 2. users
-                  await GetIt.I<Database>().createFakeData();
+
                   //send notification to user
                   // await GetIt.I<Database>()
                   //     .notifyquizUpdate(CoursesListEnum.values);

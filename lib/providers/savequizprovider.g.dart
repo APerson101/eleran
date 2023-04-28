@@ -6,7 +6,7 @@ part of 'savequizprovider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$saveQuizHash() => r'fcc999e0a42ba632069ad61d424e303aecc581eb';
+String _$saveQuizHash() => r'675ef6b0dcb8ee42738125c2cf195954f3c3e579';
 
 /// See also [SaveQuiz].
 @ProviderFor(SaveQuiz)
@@ -21,4 +21,20 @@ final saveQuizProvider =
 );
 
 typedef _$SaveQuiz = AutoDisposeAsyncNotifier<SaveQuizEnums>;
+String _$saveUserProfileHash() => r'96e5e93d69458ba9be12b222e9329e618114fcc4';
+
+/// See also [SaveUserProfile].
+@ProviderFor(SaveUserProfile)
+final saveUserProfileProvider =
+    AutoDisposeAsyncNotifierProvider<SaveUserProfile, SaveProfileEnum>.internal(
+  SaveUserProfile.new,
+  name: r'saveUserProfileProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$saveUserProfileHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$SaveUserProfile = AutoDisposeAsyncNotifier<SaveProfileEnum>;
 // ignore_for_file: unnecessary_raw_strings, subtype_of_sealed_class, invalid_use_of_internal_member, do_not_use_environment, prefer_const_constructors, public_member_api_docs, avoid_private_typedef_functions

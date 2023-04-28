@@ -1,4 +1,3 @@
-import 'package:eleran/helpers/enums.dart';
 import 'package:eleran/models/quiz_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,7 +14,7 @@ class QuizQuestionsCreatorView extends ConsumerWidget {
       required this.startTime,
       required this.courses});
   final int quizDuration;
-  final List<CoursesListEnum> courses;
+  final List<String> courses;
   final DateTime startDate;
   final TimeOfDay startTime;
   final int difficulty;

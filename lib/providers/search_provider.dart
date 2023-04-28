@@ -1,5 +1,4 @@
 import 'package:eleran/helpers/db.dart';
-import 'package:eleran/helpers/enums.dart';
 import 'package:eleran/models/quiz_model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,7 +12,7 @@ class SearchResult extends _$SearchResult {
     return [];
   }
 
-  search(CoursesListEnum course) async {
+  search(String course) async {
     state = const AsyncLoading();
     try {
       var searchResult =
