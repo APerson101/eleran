@@ -5,7 +5,6 @@ import 'package:eleran/models/quiz_model.dart';
 import 'package:eleran/models/user_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
 
 import '../models/coursemodel.dart';
 
@@ -14,9 +13,7 @@ class Database {
   FirebaseFunctions functions = FirebaseFunctions.instance;
   FirebaseDatabase database = FirebaseDatabase.instance;
   Database();
-  Client client = Client();
-  String tempToken = "";
-  saveToken(String fcmtoken, UserModel user) async {
+  saveToken(String fcmToken, UserModel user) async {
     var id = (await store
             .collection('users')
             .where('id', isEqualTo: user.id)
@@ -26,7 +23,7 @@ class Database {
         .id;
     (await store
         .doc('users/$id')
-        .update({'fcmtoken': fcmtoken})
+        .update({'fcmToken': fcmToken})
         .then((value) => true)
         .catchError((err) {
           debugPrint(err.toString());

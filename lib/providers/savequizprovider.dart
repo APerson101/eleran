@@ -1,4 +1,5 @@
 import 'package:eleran/helpers/db.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -50,6 +51,18 @@ class SaveUserProfile extends _$SaveUserProfile {
     state = const AsyncValue.loading();
     try {
       await GetIt.I<Database>().saveUserProfile(user: user);
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+      var key = await messaging.getToken();
+      await GetIt.I<Database>().saveToken(key!, user);
       state = const AsyncData(SaveProfileEnum.success);
     } catch (e) {
       state = AsyncError(e.toString(), StackTrace.current);

@@ -46,7 +46,8 @@ class UserModel {
     return UserModel(
       name: map['name'] ?? '',
       id: map['id'] ?? '',
-      courses: List<String>.from(map['courses']),
+      courses:
+          map['courses'] != null ? List<String>.from(map['courses']) : null,
       userType: UserType.values
           .firstWhere((element) => describeEnum(element) == map['userType']),
       fcmToken: map['fcmToken'],

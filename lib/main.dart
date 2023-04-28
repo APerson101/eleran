@@ -36,9 +36,9 @@ void main() async {
   FirebaseFirestore store = FirebaseFirestore.instance;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   GetIt.I.registerSingleton<FirebaseFirestore>(store);
-  FirebaseFirestore.instance.useFirestoreEmulator('192.168.25.127', 8080);
-  FirebaseDatabase.instance.useDatabaseEmulator('192.168.25.127', 9000);
-  FirebaseAuth.instance.useAuthEmulator('192.168.25.127', 9099);
+  FirebaseFirestore.instance.useFirestoreEmulator('192.168.110.127', 8080);
+  FirebaseDatabase.instance.useDatabaseEmulator('192.168.110.127', 9000);
+  FirebaseAuth.instance.useAuthEmulator('192.168.110.127', 9099);
   GetIt.I.registerSingleton<Database>(Database());
 
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -190,9 +190,8 @@ class MyApp extends StatelessWidget {
 }
 
 class ProfileDecider extends ConsumerWidget {
-  ProfileDecider({super.key, required this.id});
+  const ProfileDecider({super.key, required this.id});
   final String id;
-  final nameController = TextEditingController();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(saveUserProfileProvider, (previous, next) {
@@ -214,26 +213,49 @@ class ProfileDecider extends ConsumerWidget {
     });
     return ref.watch(getUserProfile(id)).when(
         data: (data) {
-          if (data == null) {
-            return ref.watch(getMessagingToken(data!)).when(data: (token) {
-              return Scaffold(
-                body: SafeArea(
+          if (data != null) {
+            return data.userType == UserType.student
+                ? StudentView(
+                    user: data,
+                  )
+                : data.userType == UserType.staff
+                    ? LecturerHomePage(user: data)
+                    : AdminView(user: data);
+          }
+          {
+            return Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: const Text("Continue Registeration"),
+              ),
+              body: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SafeArea(
                   child: Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         TextFormField(
+                          onChanged: (text) {
+                            ref.watch(_userController.notifier).state = text;
+                          },
                           decoration: InputDecoration(
-                              labelText: 'Enter name',
+                              labelText: 'Enter Your full name',
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
-                        DropdownButton<String>(
+                        DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20))),
                             value: ref.watch(_selectedUserType),
                             items: const [
                               DropdownMenuItem(
                                   value: 'staff', child: Text("Staff")),
                               DropdownMenuItem(
                                   value: 'student', child: Text("Student")),
+                              DropdownMenuItem(
+                                  value: 'admin', child: Text("Admin")),
                             ],
                             onChanged: (selected) {
                               if (selected != null) {
@@ -247,19 +269,30 @@ class ProfileDecider extends ConsumerWidget {
                                 children: courses
                                     .map((course) => Expanded(
                                           child: CheckboxListTile(
-                                              value: ref.watch(
-                                                      _selectedCourseProvider) ==
-                                                  courses.indexOf(course),
+                                              value: ref
+                                                  .watch(
+                                                      _selectedCourseProvider)
+                                                  .contains(course.name),
                                               title: Text(course.name),
                                               onChanged: (selected) => selected !=
-                                                          null &&
-                                                      selected
+                                                      null
                                                   ? ref
-                                                          .watch(
-                                                              _selectedCourseProvider
-                                                                  .notifier)
-                                                          .state =
-                                                      courses.indexOf(course)
+                                                      .watch(
+                                                          _selectedCourseProvider
+                                                              .notifier)
+                                                      .update((state) {
+                                                      state.contains(
+                                                              course.name)
+                                                          ? {
+                                                              state.remove(
+                                                                  course.name),
+                                                              state = [...state]
+                                                            }
+                                                          : state
+                                                              .add(course.name);
+                                                      state = [...state];
+                                                      return state;
+                                                    })
                                                   : null),
                                         ))
                                     .toList(),
@@ -270,38 +303,40 @@ class ProfileDecider extends ConsumerWidget {
                             loading: () =>
                                 const CircularProgressIndicator.adaptive()),
                         ElevatedButton(
-                            onPressed: () {
-                              var user = UserModel(
-                                  name: nameController.text,
-                                  id: id,
-                                  userType: UserType.values.firstWhere(
-                                      (element) =>
-                                          describeEnum(element) ==
-                                          ref.watch(_selectedUserType)));
-                              ref
-                                  .watch(saveUserProfileProvider.notifier)
-                                  .saveProfile(user);
+                          onPressed: () {
+                            var user = UserModel(
+                                name: ref.watch(_userController),
+                                id: id,
+                                courses: ref.watch(_selectedUserType) == 'admin'
+                                    ? null
+                                    : ref.watch(_selectedCourseProvider),
+                                userType: UserType.values.firstWhere(
+                                    (element) =>
+                                        describeEnum(element) ==
+                                        ref.watch(_selectedUserType)));
+                            ref
+                                .watch(saveUserProfileProvider.notifier)
+                                .saveProfile(user);
+                          },
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              minimumSize: const Size(double.infinity, 60)),
+                          child: const Text("Save Profile"),
+                        ),
+                        TextButton(
+                            onPressed: () async {
+                              FirebaseAuth.instance.signOut();
+                              Navigator.pushReplacementNamed(
+                                  context, '/sign-in');
                             },
-                            child: const Text("Save Profile"))
+                            child: const Text("logout"))
                       ],
                     ),
                   ),
                 ),
-              );
-            }, error: (er, st) {
-              return const Center(child: Text("Error "));
-            }, loading: () {
-              return const Center(child: CircularProgressIndicator.adaptive());
-            });
-          }
-          {
-            return data.userType == UserType.student
-                ? StudentView(
-                    user: data,
-                  )
-                : data.userType == UserType.staff
-                    ? LecturerHomePage(user: data)
-                    : AdminView(user: data);
+              ),
+            );
           }
         },
         error: (er, st) {
@@ -395,7 +430,7 @@ final getCoursesProvider = FutureProvider((ref) async {
   return await GetIt.I<Database>().getAllCourses();
 });
 
-final _selectedCourseProvider = StateProvider((ref) => 0);
+final _selectedCourseProvider = StateProvider<List<String>>((ref) => []);
 final getMessagingToken =
     FutureProvider.family<void, UserModel>((ref, user) async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -411,3 +446,4 @@ final getMessagingToken =
   var key = await messaging.getToken();
   await GetIt.I<Database>().saveToken(key!, user);
 });
+final _userController = StateProvider((ref) => '');

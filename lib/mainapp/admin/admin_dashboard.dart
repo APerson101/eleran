@@ -33,80 +33,90 @@ class AdminDashboard extends ConsumerWidget {
         child: Padding(
       padding: const EdgeInsets.all(20),
       child: ref.watch(getCoursesProvider).when(data: (courses) {
-        return Column(
-          children: [
-            ...List.generate(
-                courses.length,
-                (index) => ListTile(
-                      title: Text(courses[index].name),
-                      trailing: IconButton(
-                          onPressed: () async {
-                            // remove this course
-                            await showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text(
-                                        "Are you sure you want to delete this course?"),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            ref
-                                                .watch(
-                                                    saveCourseProvider.notifier)
-                                                .removeCourse(courses[index]);
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text("Continue")),
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text("Cancel")),
-                                    ],
-                                  );
-                                });
-                          },
-                          icon: const Icon(Icons.cancel)),
-                    )),
-            ElevatedButton(
-                onPressed: () async {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          actions: [
-                            TextButton(
-                                onPressed: () async {
-                                  ref
-                                      .watch(saveCourseProvider.notifier)
-                                      .saveNewCourse(CourseModel(
-                                          name: newCourseNameControler.text,
-                                          dateAdded: DateTime.now()));
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("continue")),
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("cancel")),
-                          ],
-                          content: SizedBox(
-                            height: 75,
-                            width: 150,
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                  labelText: 'Enter course code',
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(30))),
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              courses.isEmpty
+                  ? const Text("No courses added yet!")
+                  : const SizedBox(
+                      height: 0,
+                    ),
+              ...List.generate(
+                  courses.length,
+                  (index) => ListTile(
+                        title: Text(courses[index].name),
+                        trailing: IconButton(
+                            onPressed: () async {
+                              // remove this course
+                              await showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text(
+                                          "Are you sure you want to delete this course?"),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              ref
+                                                  .watch(saveCourseProvider
+                                                      .notifier)
+                                                  .removeCourse(courses[index]);
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text("Continue")),
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text("Cancel")),
+                                      ],
+                                    );
+                                  });
+                            },
+                            icon: const Icon(Icons.cancel)),
+                      )),
+              ElevatedButton(
+                  onPressed: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            actions: [
+                              TextButton(
+                                  onPressed: () async {
+                                    ref
+                                        .watch(saveCourseProvider.notifier)
+                                        .saveNewCourse(CourseModel(
+                                            name: newCourseNameControler.text,
+                                            dateAdded: DateTime.now()));
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("continue")),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("cancel")),
+                            ],
+                            content: SizedBox(
+                              height: 75,
+                              width: 150,
+                              child: TextFormField(
+                                controller: newCourseNameControler,
+                                decoration: InputDecoration(
+                                    labelText: 'Enter course code',
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30))),
+                              ),
                             ),
-                          ),
-                        );
-                      });
-                },
-                child: const Text('Enter new course'))
-          ],
+                          );
+                        });
+                  },
+                  child: const Text('Enter new course'))
+            ],
+          ),
         );
       }, error: (er, st) {
         return const Text("Error fetching courses");
