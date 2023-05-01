@@ -4,7 +4,6 @@ import 'package:eleran/helpers/db.dart';
 import 'package:eleran/providers/savequizprovider.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -27,20 +26,19 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await initializeDateFormatting('en_US', null);
-  FirebaseFirestore.instance.settings = const Settings(
-    host: "10.10.1.62:8080",
-    sslEnabled: false,
-    persistenceEnabled: false,
-  );
+  // FirebaseFirestore.instance.settings = const Settings(
+  //   host: "10.10.1.62:8080",
+  //   sslEnabled: false,
+  //   persistenceEnabled: false,
+  // );
   GetIt.I.registerSingleton<FirebaseMessaging>(FirebaseMessaging.instance);
-  GetIt.I.registerSingleton<FirebaseFunctions>(
-      FirebaseFunctions.instance..useFunctionsEmulator('192.168.8.100', 5001));
+  GetIt.I.registerSingleton<FirebaseFunctions>(FirebaseFunctions.instance);
   FirebaseFirestore store = FirebaseFirestore.instance;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   GetIt.I.registerSingleton<FirebaseFirestore>(store);
-  FirebaseFirestore.instance.useFirestoreEmulator('192.168.8.100', 8080);
-  FirebaseDatabase.instance.useDatabaseEmulator('192.168.8.100', 9000);
-  FirebaseAuth.instance.useAuthEmulator('192.168.8.100', 9099);
+  // FirebaseFirestore.instance.useFirestoreEmulator('192.168.8.100', 8080);
+  // FirebaseDatabase.instance.useDatabaseEmulator('192.168.8.100', 9000);
+  // FirebaseAuth.instance.useAuthEmulator('192.168.8.100', 9099);
   GetIt.I.registerSingleton<Database>(Database());
 
   const AndroidInitializationSettings initializationSettingsAndroid =
