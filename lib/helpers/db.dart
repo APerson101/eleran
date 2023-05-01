@@ -96,9 +96,7 @@ class Database {
   getPending({required UserModel user}) async {
     var userQuizzes = (await store
             .collection('Quizzes')
-            .where('courses',
-                arrayContainsAny:
-                    user.courses!.map((e) => describeEnum(e)).toList())
+            .where('courses', arrayContainsAny: user.courses!)
             .get())
         .docs;
 

@@ -7,6 +7,7 @@ import 'package:eleran/models/quiz_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 
 import '../../models/user_model.dart';
 
@@ -119,19 +120,39 @@ class _QuizzesView extends ConsumerWidget {
       appBar: AppBar(),
       body: Column(
           children: quizzes
-              .map((e) => ListTile(
-                    onTap: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return QuizWaitingPageView(
-                          quizID: e.quizID,
-                          user: user,
-                        );
-                      }));
-                    },
-                    title: Text(e.creatorName),
-                    subtitle: Text(e.startDate.toIso8601String()),
-                    trailing: Text(e.startTime.toString()),
+              .map((e) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 5),
+                    child: Card(
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return QuizWaitingPageView(
+                              quizID: e.quizID,
+                              user: user,
+                            );
+                          }));
+                        },
+                        leading: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text("${quizzes.indexOf(e) + 1}"),
+                        ),
+                        title: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text("${e.relatedCourses[0]}: ${e.quizName}"),
+                        ),
+                        trailing: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text('mins: ${e.duration}'),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text(
+                              '${DateFormat.yMMMEd().format(e.startDate)}, ${e.startTime.format(context)}'),
+                        ),
+                      ),
+                    ),
                   ))
               .toList()),
     );
@@ -167,18 +188,21 @@ class _PreviousQuizHistory extends ConsumerWidget {
     return ref.watch(getUserQuizHistory(user)).when(data: (history) {
       return Scaffold(
           appBar: AppBar(),
-          body: Column(
-              children: history
-                  .map((e) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          title: Text(e.quizName),
-                          trailing: Text(e.quizTaken.toIso8601String()),
-                          subtitle: Text(
-                              '${e.answers.where((element) => element).length} / ${e.answers.length}'),
-                        ),
-                      ))
-                  .toList()));
+          body: history.isNotEmpty
+              ? Column(
+                  children: history
+                      .map((e) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              title: Text(e.quizName),
+                              trailing:
+                                  Text(DateFormat.yMMMEd().format(e.quizTaken)),
+                              subtitle: Text(
+                                  '${e.answers.where((element) => element).length} / ${e.answers.length}'),
+                            ),
+                          ))
+                      .toList())
+              : const Center(child: Text("No quizzes taken yet")));
     }, error: (Object error, StackTrace stackTrace) {
       debugPrintStack(stackTrace: stackTrace);
       return const Material(

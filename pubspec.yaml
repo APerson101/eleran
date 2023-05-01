@@ -33,6 +33,11 @@ dependencies:
   syncfusion_flutter_datagrid: ^21.1.41
   firebase_auth: ^4.4.2
   firebase_ui_auth: ^1.2.2
+  intl: ^0.17.0
+  uuid: ^3.0.7
+  lottie: ^2.3.2
+  animated: ^2.0.0
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:
@@ -61,7 +66,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+      - animations/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

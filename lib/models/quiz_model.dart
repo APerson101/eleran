@@ -43,8 +43,9 @@ class QuizModel {
   }
 
   factory QuizModel.fromMap(Map<String, dynamic> map) {
-    var courses = map['courses'] as List<String>;
-
+    var courses = map['courses'];
+    var convertecourses = List<String>.generate(
+        courses.length, (index) => courses[index] as String);
     return QuizModel(
         creatorID: map['creatorID'] ?? '',
         quizID: map['quizID'],
@@ -57,7 +58,7 @@ class QuizModel {
         startDate: DateTime.fromMillisecondsSinceEpoch(map['startDate']),
         startTime: TimeOfDay(
             hour: map['startTime']['hour'], minute: map['startTime']['min']),
-        relatedCourses: courses);
+        relatedCourses: convertecourses);
   }
 
   String toJson() => json.encode(toMap());

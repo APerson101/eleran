@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'firebase_options.dart';
 import 'mainapp/admin/admin_landing.dart';
@@ -25,6 +26,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await initializeDateFormatting('en_US', null);
   FirebaseFirestore.instance.settings = const Settings(
     host: "10.10.1.62:8080",
     sslEnabled: false,
@@ -32,13 +34,13 @@ void main() async {
   );
   GetIt.I.registerSingleton<FirebaseMessaging>(FirebaseMessaging.instance);
   GetIt.I.registerSingleton<FirebaseFunctions>(
-      FirebaseFunctions.instance..useFunctionsEmulator('192.168.25.127', 5001));
+      FirebaseFunctions.instance..useFunctionsEmulator('192.168.8.100', 5001));
   FirebaseFirestore store = FirebaseFirestore.instance;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   GetIt.I.registerSingleton<FirebaseFirestore>(store);
-  FirebaseFirestore.instance.useFirestoreEmulator('192.168.110.127', 8080);
-  FirebaseDatabase.instance.useDatabaseEmulator('192.168.110.127', 9000);
-  FirebaseAuth.instance.useAuthEmulator('192.168.110.127', 9099);
+  FirebaseFirestore.instance.useFirestoreEmulator('192.168.8.100', 8080);
+  FirebaseDatabase.instance.useDatabaseEmulator('192.168.8.100', 9000);
+  FirebaseAuth.instance.useAuthEmulator('192.168.8.100', 9099);
   GetIt.I.registerSingleton<Database>(Database());
 
   const AndroidInitializationSettings initializationSettingsAndroid =

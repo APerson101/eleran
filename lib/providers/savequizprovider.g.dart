@@ -21,7 +21,7 @@ final saveQuizProvider =
 );
 
 typedef _$SaveQuiz = AutoDisposeAsyncNotifier<SaveQuizEnums>;
-String _$saveUserProfileHash() => r'96e5e93d69458ba9be12b222e9329e618114fcc4';
+String _$saveUserProfileHash() => r'2ead9105e4aafe2743a24e84da59e0b5e2fdd3d3';
 
 /// See also [SaveUserProfile].
 @ProviderFor(SaveUserProfile)

@@ -7,12 +7,13 @@ class LecturerProfileView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ProfileScreen(providers: [
-      EmailAuthProvider()
-    ], actions: [
-      SignedOutAction((context) {
-        Navigator.pushReplacementNamed(context, '/sign-in');
-      }),
-    ]);
+    return ProfileScreen(
+      providers: [EmailAuthProvider()],
+      actions: [
+        SignedOutAction((context) {
+          Navigator.pushReplacementNamed(context, '/sign-in');
+        }),
+      ],
+    );
   }
 }

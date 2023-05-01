@@ -25,15 +25,18 @@ class StudentSearchView extends ConsumerWidget {
                 return Row(
                   children: courses.map((e) {
                     return Expanded(
-                      child: RadioListTile<CourseModel>(
-                          title: Text(e.name),
-                          value: e,
-                          groupValue: courses[ref.watch(_selectedValue)],
-                          onChanged: (changed) {
-                            ref.watch(_selectedValue.notifier).state =
-                                courses.indexOf(changed!);
-                            ref.watch(_selectedCourse.notifier).state = changed;
-                          }),
+                      child: Card(
+                        child: RadioListTile<CourseModel>(
+                            title: Text(e.name),
+                            value: e,
+                            groupValue: courses[ref.watch(_selectedValue)],
+                            onChanged: (changed) {
+                              ref.watch(_selectedValue.notifier).state =
+                                  courses.indexOf(changed!);
+                              ref.watch(_selectedCourse.notifier).state =
+                                  changed;
+                            }),
+                      ),
                     );
                   }).toList(),
                 );
@@ -91,6 +94,9 @@ class StudentSearchView extends ConsumerWidget {
                                 columnName: 'Quiz Title',
                                 label: const Text("Quiz Title")),
                             GridColumn(
+                                columnName: 'Quiz Duration',
+                                label: const Text("Duration(min)")),
+                            GridColumn(
                                 columnName: 'Creator Name',
                                 label: const Text("Creator")),
                           ])
@@ -120,6 +126,7 @@ class QuizSearchResult extends DataGridSource {
     dataGridRow = models.map((e) {
       return DataGridRow(cells: [
         DataGridCell(columnName: 'Quiz Title', value: e.quizName),
+        DataGridCell(columnName: 'Quiz Duration', value: e.duration.toString()),
         DataGridCell(columnName: 'Creator', value: e.creatorName),
       ]);
     }).toList();

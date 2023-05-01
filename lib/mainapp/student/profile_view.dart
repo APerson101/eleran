@@ -1,6 +1,5 @@
 import 'package:eleran/models/user_model.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,7 +17,7 @@ class StudentProfileView extends ConsumerWidget {
             Navigator.pushReplacementNamed(context, '/sign-in');
           }),
         ],
-        children: [...user.courses!.map((e) => Text(describeEnum(e)))],
+        children: [...user.courses!.map((e) => Text(e))],
       )),
     );
   }
