@@ -96,7 +96,6 @@ class TakeQuizView extends ConsumerWidget {
                                   calculateScore(quiz, answersState.state);
                               ref.watch(saveQuizProvider.notifier).saveAnswer(
                                   quiz.quizID,
-                                  user.id,
                                   answers,
                                   quiz.quizName,
                                   DateTime.now(),

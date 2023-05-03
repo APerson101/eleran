@@ -21,7 +21,6 @@ class SaveQuiz extends _$SaveQuiz {
 
   saveAnswer(
       String quizID,
-      String studentID,
       List<bool> answers,
       String quizName,
       DateTime quizTaken,
@@ -30,7 +29,7 @@ class SaveQuiz extends _$SaveQuiz {
       String userID) async {
     try {
       await GetIt.I<Database>().saveQuizAnswer(
-          quizID, studentID, answers, quizName, quizTaken, userName, userID);
+          quizID, answers, quizName, quizTaken, userName, userID);
       state = const AsyncData(SaveQuizEnums.success);
       ref.watch(stopQuizProvider.notifier).state = QuizEndEnum.result;
       // refresh pending quiz and previous taken quiz

@@ -60,16 +60,8 @@ class Database {
     return result.data as bool;
   }
 
-  saveQuizAnswer(
-      String quizID,
-      String studentID,
-      List<bool> answers,
-      String quizName,
-      DateTime quizTaken,
-      String userName,
-      String userID) async {
-    var ref = database.ref('Quizzes/$quizID');
-    await ref.set({studentID: answers});
+  saveQuizAnswer(String quizID, List<bool> answers, String quizName,
+      DateTime quizTaken, String userName, String userID) async {
     var quizHistory = QuizHistoryModel(
         quizName: quizName,
         answers: answers,
@@ -77,9 +69,7 @@ class Database {
         userName: userName,
         quizID: quizID,
         quizTaken: quizTaken);
-    (await store
-        .collection('history/$studentID/quizHistory')
-        .add(quizHistory.toMap()));
+    (await store.collection('history').add(quizHistory.toMap()));
   }
 
   getPending({required UserModel user}) async {
@@ -108,8 +98,11 @@ class Database {
 
   Future<List<QuizHistoryModel>> getUserQuizHistory(UserModel user) async {
     debugPrint(user.id);
-    var historyDocs =
-        (await store.collection('history/${user.id}/quizHistory').get()).docs;
+    var historyDocs = (await store
+            .collection('history')
+            .where('userID', isEqualTo: user.id)
+            .get())
+        .docs;
     var data = List.generate(historyDocs.length,
         (index) => QuizHistoryModel.fromMap(historyDocs[index].data()));
     return data;
@@ -141,21 +134,10 @@ class Database {
         docs.length, (index) => QuizModel.fromMap(docs[index].data()));
   }
 
-  Future<List<QuizHistoryModel>> getQuizStats(
-      {required String quizID, required staffID}) async {
-    List<String> staffQuizID = [];
-    var docs = (await store
-            .collection('Quizzes')
-            .where('creatorID', isEqualTo: staffID)
-            .get())
-        .docs;
-    for (var doc in docs) {
-      staffQuizID.add(doc.get('quizID'));
-    }
-
+  Future<List<QuizHistoryModel>> getQuizStats({required String quizID}) async {
     var hist = (await store
             .collection('history')
-            .where('creatorID', whereIn: staffQuizID)
+            .where('quizID', isEqualTo: quizID)
             .get())
         .docs;
     return List.generate(

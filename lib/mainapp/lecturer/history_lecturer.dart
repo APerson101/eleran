@@ -142,8 +142,7 @@ final getLecturerQuizzes =
 
 final _getQuizStats =
     FutureProvider.family<List<QuizHistoryModel>, QuizModel>((ref, map) async {
-  return await GetIt.I<Database>()
-      .getQuizStats(quizID: map.quizID, staffID: map.creatorID);
+  return await GetIt.I<Database>().getQuizStats(quizID: map.quizID);
 });
 
 class ResultData extends DataGridSource {
