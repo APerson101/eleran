@@ -73,8 +73,8 @@ class Database {
     var quizHistory = QuizHistoryModel(
         quizName: quizName,
         answers: answers,
-        userID: userName,
-        userName: userID,
+        userID: userID,
+        userName: userName,
         quizID: quizID,
         quizTaken: quizTaken);
     (await store
