@@ -80,17 +80,6 @@ class Database {
     (await store
         .collection('history/$studentID/quizHistory')
         .add(quizHistory.toMap()));
-    /**
-     * {
-     * "quizzes": {
-     * "QUIZID": {
-     * "studentID": "
-     * [0,1,2,3,4]
-     * "
-     * }
-     * }
-     * }
-     */
   }
 
   getPending({required UserModel user}) async {

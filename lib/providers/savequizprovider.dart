@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../mainapp/student/student_view.dart';
 import '../models/user_model.dart';
 import 'countdownprovider.dart';
 
@@ -24,6 +25,7 @@ class SaveQuiz extends _$SaveQuiz {
       List<bool> answers,
       String quizName,
       DateTime quizTaken,
+      UserModel user,
       String userName,
       String userID) async {
     try {
@@ -31,6 +33,9 @@ class SaveQuiz extends _$SaveQuiz {
           quizID, studentID, answers, quizName, quizTaken, userName, userID);
       state = const AsyncData(SaveQuizEnums.success);
       ref.watch(stopQuizProvider.notifier).state = QuizEndEnum.result;
+      // refresh pending quiz and previous taken quiz
+      ref.invalidate(getUserQuizHistory(user));
+      ref.invalidate(getUpComingQuiz(user));
     } catch (e) {
       debugPrint(e.toString());
       state = const AsyncData(SaveQuizEnums.failure);

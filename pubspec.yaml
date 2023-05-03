@@ -38,6 +38,7 @@ dependencies:
   lottie: ^2.3.2
   animated: ^2.0.0
   animated_text_kit: ^4.2.2
+  google_fonts: ^4.0.4
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +87,9 @@ flutter:
     - family: SocialIcons
       fonts:
         - asset: packages/firebase_ui_auth/fonts/SocialIcons.ttf
+    - family: Anton
+      fonts:
+        - asset: fonts/Anton/Anton-Regular.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

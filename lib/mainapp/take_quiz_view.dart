@@ -1,3 +1,4 @@
+import 'package:eleran/mainapp/student_quiz_result.dart';
 import 'package:eleran/models/quiz_model.dart';
 import 'package:eleran/providers/countdownprovider.dart';
 import 'package:flutter/material.dart';
@@ -95,10 +96,11 @@ class TakeQuizView extends ConsumerWidget {
                                   calculateScore(quiz, answersState.state);
                               ref.watch(saveQuizProvider.notifier).saveAnswer(
                                   quiz.quizID,
-                                  '4421',
+                                  user.id,
                                   answers,
                                   quiz.quizName,
                                   DateTime.now(),
+                                  user,
                                   user.name,
                                   user.id);
                             }
@@ -113,19 +115,11 @@ class TakeQuizView extends ConsumerWidget {
         ),
       );
     }
-    return Scaffold(
-        appBar: AppBar(),
-        body: Column(
-          children: [
-            const Text('done!'),
-            Text("you scored: ${calculateScore(quiz, answersState.state)}"),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text("back"))
-          ],
-        ));
+    var scores = calculateScore(quiz, answersState.state);
+    return StudentQuizResultView(
+      correctAnswersLength: scores.where((element) => element).toList().length,
+      totalQuestionsLength: scores.length,
+    );
   }
 
   List<bool> calculateScore(QuizModel quiz, List<List<bool?>> userAnswers) {
@@ -134,12 +128,9 @@ class TakeQuizView extends ConsumerWidget {
     bool optionCorrect = false;
     List<bool> answersreturn =
         List.generate(quiz.allQuestions.length, (index) => false);
-    print("the length of the ansers array is :, $answersreturn");
     for (var question in quiz.allQuestions) {
       var answers = question.correctAnswers;
       int answerIndex = 0;
-      print(
-          'for question $questionIndex user entered ${userAnswers[questionIndex]} and the correct answer is : $answers');
       for (var answer in answers) {
         if (answer == userAnswers[questionIndex][answerIndex]) {
           optionCorrect = true;
@@ -150,11 +141,9 @@ class TakeQuizView extends ConsumerWidget {
         answerIndex += 1;
       }
       if (optionCorrect == true) {
-        print('so therefore this is correct');
         answersreturn[questionIndex] = true;
         correct += 1;
       } else {
-        print(answersreturn);
         answersreturn[questionIndex] = false;
       }
       questionIndex += 1;
